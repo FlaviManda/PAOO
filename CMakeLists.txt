@@ -1,0 +1,34 @@
+cmake_minimum_required(VERSION 3.0)
+
+set(myproject "RobotApp")
+# nume proiect
+project(${myproject})
+
+# standard C++
+if(CMAKE_VERSION GREATER "3.1.2") 
+    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+else()
+    if(CMAKE_COMPILER_IS_GNUCXX)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    endif()    
+endif()
+
+# sursa + antet
+set(myfiles src/robot.cpp inc/robot.hpp)
+
+# librarie ststica
+add_library(lib STATIC ${myfiles})
+
+# executabil
+add_executable(${myproject} src/main.cpp)
+
+# facem link intre librarie si executabil
+target_link_libraries(${myproject} PUBLIC lib)
+
+# specificam directoarele de includere
+target_include_directories(${myproject} 
+ PRIVATE src INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
+    $<INSTALL_INTERFACE:inc>)
