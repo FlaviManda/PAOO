@@ -4,14 +4,13 @@
 #include <string>
 #include <iostream>
 
-class Robot 
-{
+class Robot {
 private:
     std::string name;               
     std::string* currentTask;       
     int id;                         
-    
-    static int nextId;              
+
+    static int nextId;            
 
 public:
     // Constructor
@@ -24,7 +23,13 @@ public:
     Robot(const Robot& other);
 
     // Move constructor
-    Robot(Robot&& other);
+    Robot(Robot&& other) noexcept;
+
+    // Copy assignment operator
+    Robot& operator=(const Robot& other);
+
+    // Move assignment operator
+    Robot& operator=(Robot&& other) noexcept;
 
     void displayInfo() const;
     void changeTask(const std::string& newTask);
