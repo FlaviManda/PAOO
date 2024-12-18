@@ -1,38 +1,71 @@
 #ifndef ROBOT_HPP
 #define ROBOT_HPP
 
-#include <string>
 #include <iostream>
+#include <memory>  //std::shared_ptr
+#include <mutex>   //std::mutex
+#include <string>
 
-class Robot {
+class ResourceManager 
+{
 private:
-    std::string name;               
-    std::string* currentTask;       
-    int id;                         
-
-    static int nextId;            
+    std::shared_ptr<std::mutex> resourceMutex; // mutex gestionat prin shared_ptr
 
 public:
-    // Constructor
+    
+    ResourceManager() : resourceMutex(std::make_shared<std::mutex>()) 
+    {
+        std::cout << "ResourceManager created\n";
+    }
+
+    
+    ~ResourceManager() 
+    {
+        std::cout << "ResourceManager destroyed\n";
+    }
+
+    
+    ResourceManager(const ResourceManager&) = delete;
+    ResourceManager& operator=(const ResourceManager&) = delete;
+    ResourceManager(ResourceManager&&) noexcept = delete;
+    ResourceManager& operator=(ResourceManager&&) noexcept = delete;
+
+    
+    void useResource() {
+        std::lock_guard<std::mutex> lock(*resourceMutex);
+        std::cout << "Using resource safely\n";
+    }
+};
+
+// Clasa Robot
+class Robot 
+{
+private:
+    std::string name;                         
+    std::shared_ptr<std::string> currentTask; 
+    int id;                                   
+    static int nextId;                        
+
+    ResourceManager resourceManager;          
+
+public:
+    
     Robot(const std::string& name, const std::string& task);
 
-    // Destructor
-    ~Robot();
+    ~Robot() = default;
 
-    // Copy constructor
-    Robot(const Robot& other);
+    Robot(const Robot& other) = delete;
 
-    // Move constructor
-    Robot(Robot&& other) noexcept;
+    Robot(Robot&& other) noexcept = delete;
 
-    // Copy assignment operator
-    Robot& operator=(const Robot& other);
+    Robot& operator=(const Robot& other) = delete;
 
-    // Move assignment operator
-    Robot& operator=(Robot&& other) noexcept;
+    Robot& operator=(Robot&& other) noexcept = delete;
 
     void displayInfo() const;
     void changeTask(const std::string& newTask);
+
+    void useRobotResource();
 };
 
 #endif
